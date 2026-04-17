@@ -11,19 +11,31 @@ public class EnemyAI : MonoBehaviour
     public float hearRange = 2f;
     public float giveUpTime = 2f;
 
+    [Header("Punch")]
+    public Sprite normalSprite;
+    public Sprite punchSprite;
+    public float punchRange = 0.8f;
+    public float punchCooldown = 1f;
+    public float punchDamage = 20f;
+
     Transform player;
     Rigidbody2D playerRb;
     Rigidbody2D rb;
+    SpriteRenderer sr;
     Transform patrolTarget;
     string state = "patrol";
     float alertTimer = 0f;
     float lostTimer = 0f;
+    float punchTimer = 0f;
+    bool isPunching = false;
+    float punchAnimTimer = 0f;
 
     void Start()
     {
         player = GameObject.FindWithTag("Player").transform;
         playerRb = player.GetComponent<Rigidbody2D>();
         rb = GetComponent<Rigidbody2D>();
+        sr = GetComponent<SpriteRenderer>();
         patrolTarget = pointA;
     }
 
@@ -31,9 +43,26 @@ public class EnemyAI : MonoBehaviour
     {
         if (player == null) return;
 
-        // detection / state switching (logic only, no movement)
+        if (punchTimer > 0f)
+            punchTimer -= Time.deltaTime;
+
+        if (isPunching)
+        {
+            punchAnimTimer -= Time.deltaTime;
+            if (punchAnimTimer <= 0f)
+            {
+                isPunching = false;
+                if (normalSprite != null) sr.sprite = normalSprite;
+            }
+        }
+
         if (state == "patrol")
         {
+            if (Vector2.Distance(transform.position, player.position) <= punchRange)
+            {
+                state = "chase";
+                return;
+            }
             if (CanSeePlayer())
             {
                 state = "chase";
@@ -50,6 +79,11 @@ public class EnemyAI : MonoBehaviour
             FaceDirection(player.position - transform.position);
             alertTimer -= Time.deltaTime;
 
+            if (Vector2.Distance(transform.position, player.position) <= punchRange)
+            {
+                state = "chase";
+                return;
+            }
             if (CanSeePlayer())
             {
                 state = "chase";
@@ -60,10 +94,13 @@ public class EnemyAI : MonoBehaviour
         }
         else if (state == "chase")
         {
-            if (Vector2.Distance(transform.position, player.position) < 0.5f)
+            float distToPlayer = Vector2.Distance(transform.position, player.position);
+
+            if (distToPlayer <= punchRange)
             {
-                Debug.Log("CAUGHT! Game Over");
-                Time.timeScale = 0f;
+                lostTimer = 0f;
+                if (punchTimer <= 0f)
+                    Punch();
                 return;
             }
 
@@ -83,24 +120,21 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    // movement lives in FixedUpdate so physics handles collisions
     void FixedUpdate()
     {
         if (player == null) return;
 
         if (state == "patrol") Patrol();
         else if (state == "chase") Chase();
-        // alert state = stand still, so no movement
     }
 
     void Patrol()
     {
         Vector2 newPos = Vector2.MoveTowards(rb.position, patrolTarget.position, patrolSpeed * Time.fixedDeltaTime);
         rb.MovePosition(newPos);
-
         FaceDirection(patrolTarget.position - transform.position);
 
-        if (Vector2.Distance(transform.position, patrolTarget.position) < 0.3f)
+        if (Vector2.Distance(transform.position, patrolTarget.position) < 0.4f)
             patrolTarget = (patrolTarget == pointA) ? pointB : pointA;
     }
 
@@ -109,6 +143,21 @@ public class EnemyAI : MonoBehaviour
         Vector2 newPos = Vector2.MoveTowards(rb.position, player.position, chaseSpeed * Time.fixedDeltaTime);
         rb.MovePosition(newPos);
         FaceDirection(player.position - transform.position);
+    }
+
+    void Punch()
+    {
+        punchTimer = punchCooldown;
+        isPunching = true;
+        punchAnimTimer = 0.3f;
+
+        if (punchSprite != null) sr.sprite = punchSprite;
+
+        HUD hud = FindFirstObjectByType<HUD>();
+        if (hud != null)
+            hud.TakeDamage(punchDamage);
+
+        Debug.Log(gameObject.name + " punched the player!");
     }
 
     bool CanSeePlayer()

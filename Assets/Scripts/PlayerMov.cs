@@ -6,6 +6,8 @@ public class PlayerMov : MonoBehaviour
     public float speed = 8f;
     public Sprite idleSprite;
     public Sprite moveSprite;
+    public Sprite gunSprite;
+    public bool gunDrawn = false;
 
     Rigidbody2D rb;
     SpriteRenderer sr;
@@ -14,6 +16,12 @@ public class PlayerMov : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
+    }
+
+    void Update()
+    {
+        if (Keyboard.current.gKey.wasPressedThisFrame)
+            gunDrawn = !gunDrawn;
     }
 
     void FixedUpdate()
@@ -33,21 +41,11 @@ public class PlayerMov : MonoBehaviour
         {
             float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(0, 0, angle);
-            sr.sprite = moveSprite;
+            sr.sprite = gunDrawn ? gunSprite : moveSprite;
         }
         else
         {
-            sr.sprite = idleSprite;
-        }
-    }
-
-    void OnCollisionEnter2D(Collision2D col)
-    {
-        if (col.gameObject.CompareTag("Enemy"))
-        {
-            HUD hud = FindObjectOfType<HUD>();
-            if (hud != null)
-                hud.TakeDamage(100f);
+            sr.sprite = gunDrawn ? gunSprite : idleSprite;
         }
     }
 }

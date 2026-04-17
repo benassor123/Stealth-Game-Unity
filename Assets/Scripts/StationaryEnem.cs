@@ -9,6 +9,7 @@ public class StationaryEnem : MonoBehaviour
     public Sprite taskSpriteA;
     public Sprite taskSpriteB;
     public Sprite chaseSprite;
+    public Sprite punchSprite;
     public float taskSwapInterval = 0.5f;
 
     [Header("Detection")]
@@ -20,6 +21,11 @@ public class StationaryEnem : MonoBehaviour
     public float chaseSpeed = 2.5f;
     public float giveUpTime = 2f;
 
+    [Header("Punch")]
+    public float punchRange = 0.8f;
+    public float punchCooldown = 1f;
+    public float punchDamage = 20f;
+
     Transform player;
     Rigidbody2D playerRb;
     Rigidbody2D rb;
@@ -29,9 +35,12 @@ public class StationaryEnem : MonoBehaviour
     float alertTimer = 0f;
     float lostTimer = 0f;
 
-    // sprite swap
     float swapTimer = 0f;
     bool showingA = true;
+
+    float punchTimer = 0f;
+    bool isPunching = false;
+    float punchAnimTimer = 0f;
 
     void Start()
     {
@@ -48,12 +57,29 @@ public class StationaryEnem : MonoBehaviour
     {
         if (player == null) return;
 
-        // state logic (no movement here)
+        if (punchTimer > 0f)
+            punchTimer -= Time.deltaTime;
+
+        if (isPunching)
+        {
+            punchAnimTimer -= Time.deltaTime;
+            if (punchAnimTimer <= 0f)
+            {
+                isPunching = false;
+                if (chaseSprite != null) sr.sprite = chaseSprite;
+            }
+        }
+
         if (state == "task")
         {
             if (taskFocusPoint != null)
                 FaceDirection(taskFocusPoint.position - transform.position);
 
+            if (Vector2.Distance(transform.position, player.position) <= punchRange)
+            {
+                state = "chase";
+                return;
+            }
             if (CanSeePlayer())
             {
                 state = "chase";
@@ -70,6 +96,11 @@ public class StationaryEnem : MonoBehaviour
             FaceDirection(player.position - transform.position);
             alertTimer -= Time.deltaTime;
 
+            if (Vector2.Distance(transform.position, player.position) <= punchRange)
+            {
+                state = "chase";
+                return;
+            }
             if (CanSeePlayer())
             {
                 state = "chase";
@@ -80,10 +111,13 @@ public class StationaryEnem : MonoBehaviour
         }
         else if (state == "chase")
         {
-            if (Vector2.Distance(transform.position, player.position) < 0.5f)
+            float distToPlayer = Vector2.Distance(transform.position, player.position);
+
+            if (distToPlayer <= punchRange)
             {
-                Debug.Log("CAUGHT! Game Over");
-                Time.timeScale = 0f;
+                lostTimer = 0f;
+                if (punchTimer <= 0f)
+                    Punch();
                 return;
             }
 
@@ -105,7 +139,6 @@ public class StationaryEnem : MonoBehaviour
         UpdateSprite();
     }
 
-    // movement lives in FixedUpdate so physics handles collisions
     void FixedUpdate()
     {
         if (player == null) return;
@@ -116,12 +149,28 @@ public class StationaryEnem : MonoBehaviour
             rb.MovePosition(newPos);
             FaceDirection(player.position - transform.position);
         }
-        // task and alert states = stand still, no movement
+    }
+
+    void Punch()
+    {
+        punchTimer = punchCooldown;
+        isPunching = true;
+        punchAnimTimer = 0.3f;
+
+        if (punchSprite != null) sr.sprite = punchSprite;
+
+        HUD hud = FindFirstObjectByType<HUD>();
+        if (hud != null)
+            hud.TakeDamage(punchDamage);
+
+        Debug.Log(gameObject.name + " punched the player!");
     }
 
     void UpdateSprite()
     {
         if (sr == null) return;
+
+        if (isPunching) return;
 
         if (state == "chase")
         {

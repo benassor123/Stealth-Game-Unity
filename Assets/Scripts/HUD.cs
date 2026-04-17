@@ -108,6 +108,11 @@ public class HUD : MonoBehaviour
         UpdateHealthUI();
     }
 
+    public int GetAmmo()
+    {
+        return ammo;
+    }
+
     public void UseAmmo()
     {
         if (ammo > 0) ammo--;
@@ -133,7 +138,7 @@ public class HUD : MonoBehaviour
         currentFloor = floor;
     }
 
-    void TogglePause()
+    public void TogglePause()
     {
         paused = !paused;
         Time.timeScale = paused ? 0f : 1f;
