@@ -14,9 +14,17 @@ public class Takedown : MonoBehaviour
 
     void TryTakedown()
     {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        // first, check for a laser emitter in range - punching these breaks them
+        LaserEmitter emitter = FindClosestEmitterInRange();
+        if (emitter != null)
+        {
+            emitter.PunchHit();
+            Debug.Log("Punched laser emitter " + emitter.name);
+            return;
+        }
 
-        // find which enemy is closest
+        // otherwise, try a normal enemy takedown
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
         GameObject target = null;
         float bestDist = Mathf.Infinity;
 
@@ -33,22 +41,19 @@ public class Takedown : MonoBehaviour
         if (target == null) return;
         if (bestDist > range) return;
 
-        // work out which way the enemy is facing using their rotation
         float rot = target.transform.eulerAngles.z * Mathf.Deg2Rad;
         Vector2 facing = new Vector2(Mathf.Cos(rot), Mathf.Sin(rot));
-
-        // direction from the enemy to the player
         Vector2 toPlayer = ((Vector2)transform.position - (Vector2)target.transform.position).normalized;
-
-        // dot product tells us if we are in front or behind
-        // negative = behind, positive = in front
         float dot = Vector2.Dot(facing, toPlayer);
 
         if (dot < 0f)
         {
+            // armoured enemies fail the takedown and raise alarm
+            ArmouredEnemy armour = target.GetComponent<ArmouredEnemy>();
+            if (armour != null) { armour.OnTakedownBlocked(); return; }
+
             Debug.Log("Takedown on " + target.name);
 
-            // drop keycard if this enemy has one
             if (target.GetComponent<KeycardHolder>() != null && keycardPrefab != null)
                 Instantiate(keycardPrefab, target.transform.position, Quaternion.identity);
 
@@ -58,5 +63,25 @@ public class Takedown : MonoBehaviour
         {
             Debug.Log("Need to get behind them");
         }
+    }
+
+    LaserEmitter FindClosestEmitterInRange()
+    {
+        LaserEmitter[] emitters = FindObjectsByType<LaserEmitter>(FindObjectsSortMode.None);
+        LaserEmitter best = null;
+        float bestDist = range;
+
+        foreach (LaserEmitter em in emitters)
+        {
+            if (!em.IsAlive) continue;
+            float d = Vector2.Distance(transform.position, em.transform.position);
+            if (d < bestDist)
+            {
+                bestDist = d;
+                best = em;
+            }
+        }
+
+        return best;
     }
 }

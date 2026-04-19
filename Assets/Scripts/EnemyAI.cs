@@ -1,192 +1,117 @@
 using UnityEngine;
 
-public class EnemyAI : MonoBehaviour
+public class EnemyAI : EnemyBase
 {
+    [Header("Patrol - Classic (A to B)")]
     public Transform pointA;
     public Transform pointB;
+
+    [Header("Patrol - Multi Waypoint (optional, overrides A/B if set)")]
+    public Transform[] waypoints;
+    public bool randomOrder = false;
+
+    [Header("Patrol Behaviour")]
     public float patrolSpeed = 2f;
-    public float chaseSpeed = 2.5f;
-    public float viewRange = 4f;
-    public float viewAngle = 40f;
-    public float hearRange = 2f;
-    public float giveUpTime = 2f;
-
-    [Header("Punch")]
+    public float pauseAtWaypoint = 0f;   // seconds to pause and 'look around' at each waypoint. 0 = don't pause.
+    public float lookAroundSpeed = 60f;  // degrees/second to rotate while paused
     public Sprite normalSprite;
-    public Sprite punchSprite;
-    public float punchRange = 0.8f;
-    public float punchCooldown = 1f;
-    public float punchDamage = 20f;
 
-    Transform player;
-    Rigidbody2D playerRb;
-    Rigidbody2D rb;
-    SpriteRenderer sr;
-    Transform patrolTarget;
-    string state = "patrol";
-    float alertTimer = 0f;
-    float lostTimer = 0f;
-    float punchTimer = 0f;
-    bool isPunching = false;
-    float punchAnimTimer = 0f;
+    Transform currentTarget;
+    int waypointIndex = 0;
+    float pauseTimer = 0f;
+    float lookDirection = 1f;
 
-    void Start()
+    protected override void OnStart()
     {
-        player = GameObject.FindWithTag("Player").transform;
-        playerRb = player.GetComponent<Rigidbody2D>();
-        rb = GetComponent<Rigidbody2D>();
-        sr = GetComponent<SpriteRenderer>();
-        patrolTarget = pointA;
+        // use waypoint array if set, otherwise fall back to A/B
+        if (waypoints != null && waypoints.Length > 1)
+        {
+            waypointIndex = 0;
+            currentTarget = waypoints[0];
+        }
+        else
+        {
+            currentTarget = pointA;
+        }
     }
 
-    void Update()
+    protected override void IdleFixedUpdate()
     {
-        if (player == null) return;
+        if (currentTarget == null) return;
 
-        if (punchTimer > 0f)
-            punchTimer -= Time.deltaTime;
-
-        if (isPunching)
+        // pause at waypoint - rotate head to look around, don't move
+        if (pauseTimer > 0f)
         {
-            punchAnimTimer -= Time.deltaTime;
-            if (punchAnimTimer <= 0f)
-            {
-                isPunching = false;
-                if (normalSprite != null) sr.sprite = normalSprite;
-            }
+            pauseTimer -= Time.fixedDeltaTime;
+
+            // sweep facing direction left/right to simulate 'checking'
+            float angle = transform.eulerAngles.z + lookDirection * lookAroundSpeed * Time.fixedDeltaTime;
+            transform.rotation = Quaternion.Euler(0, 0, angle);
+
+            // flip direction partway through the pause so they look both ways
+            if (pauseTimer < pauseAtWaypoint * 0.5f && lookDirection > 0f)
+                lookDirection = -1f;
+
+            return;
         }
 
-        if (state == "patrol")
+        // move toward current target
+        Vector2 newPos = Vector2.MoveTowards(rb.position, currentTarget.position, patrolSpeed * Time.fixedDeltaTime);
+        rb.MovePosition(newPos);
+        FaceDirection(currentTarget.position - transform.position);
+
+        // arrived at waypoint
+        if (Vector2.Distance(transform.position, currentTarget.position) < 0.4f)
         {
-            if (Vector2.Distance(transform.position, player.position) <= punchRange)
+            // start pausing if pause time is set
+            if (pauseAtWaypoint > 0f)
             {
-                state = "chase";
-                return;
+                pauseTimer = pauseAtWaypoint;
+                lookDirection = 1f;
             }
-            if (CanSeePlayer())
-            {
-                state = "chase";
-                return;
-            }
-            if (CanHearPlayer())
-            {
-                state = "alert";
-                alertTimer = 1.5f;
-            }
+
+            // pick next waypoint
+            PickNextWaypoint();
         }
-        else if (state == "alert")
+    }
+
+    void PickNextWaypoint()
+    {
+        if (waypoints != null && waypoints.Length > 1)
         {
-            FaceDirection(player.position - transform.position);
-            alertTimer -= Time.deltaTime;
-
-            if (Vector2.Distance(transform.position, player.position) <= punchRange)
+            if (randomOrder)
             {
-                state = "chase";
-                return;
-            }
-            if (CanSeePlayer())
-            {
-                state = "chase";
-                return;
-            }
-            if (alertTimer <= 0f)
-                state = "patrol";
-        }
-        else if (state == "chase")
-        {
-            float distToPlayer = Vector2.Distance(transform.position, player.position);
-
-            if (distToPlayer <= punchRange)
-            {
-                lostTimer = 0f;
-                if (punchTimer <= 0f)
-                    Punch();
-                return;
-            }
-
-            if (!CanSeePlayer())
-            {
-                lostTimer += Time.deltaTime;
-                if (lostTimer > giveUpTime)
-                {
-                    state = "patrol";
-                    lostTimer = 0f;
-                }
+                // pick a different one than current
+                int newIndex;
+                do { newIndex = Random.Range(0, waypoints.Length); }
+                while (newIndex == waypointIndex && waypoints.Length > 1);
+                waypointIndex = newIndex;
             }
             else
             {
-                lostTimer = 0f;
+                waypointIndex = (waypointIndex + 1) % waypoints.Length;
             }
+            currentTarget = waypoints[waypointIndex];
+        }
+        else
+        {
+            // classic A <-> B ping pong
+            currentTarget = (currentTarget == pointA) ? pointB : pointA;
         }
     }
 
-    void FixedUpdate()
+    protected override void UpdateSprites()
     {
-        if (player == null) return;
+        if (isPunching) return;
+        if (ranged != null && ranged.IsShooting) return;
 
-        if (state == "patrol") Patrol();
-        else if (state == "chase") Chase();
-    }
-
-    void Patrol()
-    {
-        Vector2 newPos = Vector2.MoveTowards(rb.position, patrolTarget.position, patrolSpeed * Time.fixedDeltaTime);
-        rb.MovePosition(newPos);
-        FaceDirection(patrolTarget.position - transform.position);
-
-        if (Vector2.Distance(transform.position, patrolTarget.position) < 0.4f)
-            patrolTarget = (patrolTarget == pointA) ? pointB : pointA;
-    }
-
-    void Chase()
-    {
-        Vector2 newPos = Vector2.MoveTowards(rb.position, player.position, chaseSpeed * Time.fixedDeltaTime);
-        rb.MovePosition(newPos);
-        FaceDirection(player.position - transform.position);
-    }
-
-    void Punch()
-    {
-        punchTimer = punchCooldown;
-        isPunching = true;
-        punchAnimTimer = 0.3f;
-
-        if (punchSprite != null) sr.sprite = punchSprite;
-
-        HUD hud = FindFirstObjectByType<HUD>();
-        if (hud != null)
-            hud.TakeDamage(punchDamage);
-
-        Debug.Log(gameObject.name + " punched the player!");
-    }
-
-    bool CanSeePlayer()
-    {
-        Vector2 dirToPlayer = player.position - transform.position;
-        float dist = dirToPlayer.magnitude;
-        if (dist > viewRange) return false;
-
-        float angle = Vector2.Angle(transform.right, dirToPlayer);
-        if (angle > viewAngle) return false;
-
-        return true;
-    }
-
-    bool CanHearPlayer()
-    {
-        float dist = Vector2.Distance(transform.position, player.position);
-        if (dist > hearRange) return false;
-
-        if (playerRb.linearVelocity.magnitude > 0.1f)
-            return true;
-
-        return false;
-    }
-
-    void FaceDirection(Vector3 dir)
-    {
-        if (dir == Vector3.zero) return;
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0, 0, angle);
+        if (state == "chase" || state == "alert")
+        {
+            if (chaseSprite != null) sr.sprite = chaseSprite;
+        }
+        else
+        {
+            if (normalSprite != null) sr.sprite = normalSprite;
+        }
     }
 }

@@ -2016,20 +2016,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fbaf23c0214247238bb4f351160fc4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StationaryEnem
-  taskFocusPoint: {fileID: 124154823}
-  taskSpriteA: {fileID: -2818578864559392179, guid: 1eca5bc1f89f642a7a1dfe7f3c74c5d6, type: 3}
-  taskSpriteB: {fileID: -9066058787397014428, guid: 0670d3c49768b4942b222699a022c6d9, type: 3}
-  chaseSprite: {fileID: -8795175094856715387, guid: ed1156568268840b5862b8d4c698a554, type: 3}
-  punchSprite: {fileID: -9066058787397014428, guid: 0670d3c49768b4942b222699a022c6d9, type: 3}
-  taskSwapInterval: 0.5
   viewRange: 2
   viewAngle: 40
   hearRange: 0
   chaseSpeed: 2.5
   giveUpTime: 2
+  punchSprite: {fileID: -9066058787397014428, guid: 0670d3c49768b4942b222699a022c6d9, type: 3}
   punchRange: 0.8
   punchCooldown: 1
   punchDamage: 20
+  alertRadius: 6
+  alertDuration: 2
+  chaseSprite: {fileID: -8795175094856715387, guid: ed1156568268840b5862b8d4c698a554, type: 3}
+  taskFocusPoint: {fileID: 124154823}
+  taskSpriteA: {fileID: -2818578864559392179, guid: 1eca5bc1f89f642a7a1dfe7f3c74c5d6, type: 3}
+  taskSpriteB: {fileID: -9066058787397014428, guid: 0670d3c49768b4942b222699a022c6d9, type: 3}
+  taskSwapInterval: 0.5
 --- !u!1 &539567964
 GameObject:
   m_ObjectHideFlags: 0
@@ -3991,6 +3993,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 698356031}
+  - {fileID: 1764765409}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &910619565
@@ -6825,31 +6828,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &1391287723
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1391287717}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e44318607a9a4b869b2a9570bf848de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
-  pointA: {fileID: 1360126730}
-  pointB: {fileID: 1239084669}
-  patrolSpeed: 2
-  chaseSpeed: 2.5
-  viewRange: 4
-  viewAngle: 40
-  hearRange: 2
-  giveUpTime: 2
-  normalSprite: {fileID: -8795175094856715387, guid: ed1156568268840b5862b8d4c698a554, type: 3}
-  punchSprite: {fileID: -9066058787397014428, guid: 0670d3c49768b4942b222699a022c6d9, type: 3}
-  punchRange: 0.8
-  punchCooldown: 1
-  punchDamage: 20
 --- !u!114 &1391287726
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6865,6 +6843,53 @@ MonoBehaviour:
   maxHealth: 100
   healthBarPrefab: {fileID: 787682881910872701, guid: 0b5bbc77d278045188c8c44f23fe8c24, type: 3}
   barHeight: 0.7
+--- !u!114 &1391287727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1391287717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bdcd09696e844d1bb45f6ef96c30b06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShootingEnem
+  viewRange: 4
+  viewAngle: 40
+  hearRange: 2
+  chaseSpeed: 2.5
+  giveUpTime: 2
+  punchSprite: {fileID: 0}
+  punchRange: 0.8
+  punchCooldown: 1
+  punchDamage: 20
+  alertRadius: 6
+  alertDuration: 2
+  player: {fileID: 0}
+  playerRb: {fileID: 0}
+  rb: {fileID: 0}
+  sr: {fileID: 0}
+  state: idle
+  alertTimer: 0
+  lostTimer: 0
+  punchTimer: 0
+  isPunching: 0
+  punchAnimTimer: 0
+  pointA: {fileID: 1360126730}
+  pointB: {fileID: 1239084669}
+  patrolSpeed: 2
+  normalSprite: {fileID: -2818578864559392179, guid: 1eca5bc1f89f642a7a1dfe7f3c74c5d6, type: 3}
+  patrolTarget: {fileID: 0}
+  bulletPrefab: {fileID: 561857416918516427, guid: 56692dc9bdac34fa1bd8fa8e78a8f3fc, type: 3}
+  bulletSpeed: 8
+  preferredRange: 5
+  shootCooldown: 1.5
+  gunDrawnSprite: {fileID: -8535251969361700914, guid: f9d5f5d416c664bc5b99fab552f3155d, type: 3}
+  shootSprite: {fileID: -8535251969361700914, guid: f9d5f5d416c664bc5b99fab552f3155d, type: 3}
+  shootCooldownTimer: 0
+  shootAnimTimer: 0
+  isShooting: 0
 --- !u!1001 &1397540575
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7220,20 +7245,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fbaf23c0214247238bb4f351160fc4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StationaryEnem
-  taskFocusPoint: {fileID: 124154823}
-  taskSpriteA: {fileID: -2818578864559392179, guid: 1eca5bc1f89f642a7a1dfe7f3c74c5d6, type: 3}
-  taskSpriteB: {fileID: -9066058787397014428, guid: 0670d3c49768b4942b222699a022c6d9, type: 3}
-  chaseSprite: {fileID: -8795175094856715387, guid: ed1156568268840b5862b8d4c698a554, type: 3}
-  punchSprite: {fileID: -9066058787397014428, guid: 0670d3c49768b4942b222699a022c6d9, type: 3}
-  taskSwapInterval: 0.5
   viewRange: 2
   viewAngle: 40
   hearRange: 0
   chaseSpeed: 2.5
   giveUpTime: 2
+  punchSprite: {fileID: -9066058787397014428, guid: 0670d3c49768b4942b222699a022c6d9, type: 3}
   punchRange: 0.8
   punchCooldown: 1
   punchDamage: 20
+  alertRadius: 6
+  alertDuration: 2
+  chaseSprite: {fileID: -8795175094856715387, guid: ed1156568268840b5862b8d4c698a554, type: 3}
+  taskFocusPoint: {fileID: 124154823}
+  taskSpriteA: {fileID: -2818578864559392179, guid: 1eca5bc1f89f642a7a1dfe7f3c74c5d6, type: 3}
+  taskSpriteB: {fileID: -9066058787397014428, guid: 0670d3c49768b4942b222699a022c6d9, type: 3}
+  taskSwapInterval: 0.5
 --- !u!1 &1601766741
 GameObject:
   m_ObjectHideFlags: 0
@@ -7811,12 +7838,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1764765406}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.56, y: -7.57, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.7325606, y: -3.5595403, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 895194993}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1913158176
 GameObject:
@@ -8182,20 +8209,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fbaf23c0214247238bb4f351160fc4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StationaryEnem
-  taskFocusPoint: {fileID: 124154823}
-  taskSpriteA: {fileID: -2818578864559392179, guid: 1eca5bc1f89f642a7a1dfe7f3c74c5d6, type: 3}
-  taskSpriteB: {fileID: -9066058787397014428, guid: 0670d3c49768b4942b222699a022c6d9, type: 3}
-  chaseSprite: {fileID: -8795175094856715387, guid: ed1156568268840b5862b8d4c698a554, type: 3}
-  punchSprite: {fileID: -9066058787397014428, guid: 0670d3c49768b4942b222699a022c6d9, type: 3}
-  taskSwapInterval: 0.5
   viewRange: 2
   viewAngle: 40
   hearRange: 0
   chaseSpeed: 2.5
   giveUpTime: 2
+  punchSprite: {fileID: -9066058787397014428, guid: 0670d3c49768b4942b222699a022c6d9, type: 3}
   punchRange: 0.8
   punchCooldown: 1
   punchDamage: 20
+  alertRadius: 6
+  alertDuration: 2
+  chaseSprite: {fileID: -8795175094856715387, guid: ed1156568268840b5862b8d4c698a554, type: 3}
+  taskFocusPoint: {fileID: 124154823}
+  taskSpriteA: {fileID: -2818578864559392179, guid: 1eca5bc1f89f642a7a1dfe7f3c74c5d6, type: 3}
+  taskSpriteB: {fileID: -9066058787397014428, guid: 0670d3c49768b4942b222699a022c6d9, type: 3}
+  taskSwapInterval: 0.5
 --- !u!4 &1977310226 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8629875066502048433, guid: bc1ccb77e35f34d949c024e26b3a197a, type: 3}
@@ -8741,7 +8770,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2745f9aae16d34b2ba7f53d8275dde0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ExitDoor
-  nextSceneName: Level2
+  nextSceneName: SampleScene
 --- !u!61 &2115675593
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -8870,7 +8899,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3073423671945129114, guid: bc1ccb77e35f34d949c024e26b3a197a, type: 3}
       propertyPath: m_Name
-      value: PatrollingEnemy
+      value: PatrollingEnemy With Gun
       objectReference: {fileID: 0}
     - target: {fileID: 8629875066502048433, guid: bc1ccb77e35f34d949c024e26b3a197a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8921,10 +8950,10 @@ PrefabInstance:
       addedObject: {fileID: 1391287722}
     - targetCorrespondingSourceObject: {fileID: 3073423671945129114, guid: bc1ccb77e35f34d949c024e26b3a197a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1391287723}
+      addedObject: {fileID: 1391287726}
     - targetCorrespondingSourceObject: {fileID: 3073423671945129114, guid: bc1ccb77e35f34d949c024e26b3a197a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1391287726}
+      addedObject: {fileID: 1391287727}
   m_SourcePrefab: {fileID: 100100000, guid: bc1ccb77e35f34d949c024e26b3a197a, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
@@ -8933,6 +8962,7 @@ SceneRoots:
   - {fileID: 519420032}
   - {fileID: 619394802}
   - {fileID: 210390945}
+  - {fileID: 2115675594}
   - {fileID: 2058050955}
   - {fileID: 1297539512}
   - {fileID: 124154823}
@@ -8943,5 +8973,3 @@ SceneRoots:
   - {fileID: 263736426}
   - {fileID: 1733375065}
   - {fileID: 895194993}
-  - {fileID: 1764765409}
-  - {fileID: 2115675594}
