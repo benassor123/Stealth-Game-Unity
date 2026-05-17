@@ -61,16 +61,13 @@ public class EnemyHealth : MonoBehaviour
         fillBar.localPosition = new Vector3(-offset, 0f, 0f);
     }
 
-    void Die()
+    public void Die()
     {
         Debug.Log(gameObject.name + " died!");
 
-        if (GetComponent<KeycardHolder>() != null)
-        {
-            Takedown takedown = FindFirstObjectByType<Takedown>();
-            if (takedown != null && takedown.keycardPrefab != null)
-                Instantiate(takedown.keycardPrefab, transform.position, Quaternion.identity);
-        }
+        EnemyBase enemy = GetComponent<EnemyBase>();
+        if (enemy != null && enemy.dropOnDeath != null)
+            Instantiate(enemy.dropOnDeath, transform.position, Quaternion.identity);
 
         if (healthBarObj != null)
             Destroy(healthBarObj);

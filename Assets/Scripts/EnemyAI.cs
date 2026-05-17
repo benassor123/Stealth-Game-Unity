@@ -2,28 +2,27 @@ using UnityEngine;
 
 public class EnemyAI : EnemyBase
 {
-    [Header("Patrol - Classic (A to B)")]
+    [Header("Patrol A-B")]
     public Transform pointA;
     public Transform pointB;
 
-    [Header("Patrol - Multi Waypoint (optional, overrides A/B if set)")]
+    [Header("Patrol Waypoints")]
     public Transform[] waypoints;
-    public bool randomOrder = false;
+    public bool randomOrder;
 
     [Header("Patrol Behaviour")]
     public float patrolSpeed = 2f;
-    public float pauseAtWaypoint = 0f;   // seconds to pause and 'look around' at each waypoint. 0 = don't pause.
-    public float lookAroundSpeed = 60f;  // degrees/second to rotate while paused
+    public float pauseAtWaypoint;
+    public float lookAroundSpeed = 60f;
     public Sprite normalSprite;
 
     Transform currentTarget;
-    int waypointIndex = 0;
-    float pauseTimer = 0f;
+    int waypointIndex;
+    float pauseTimer;
     float lookDirection = 1f;
 
     protected override void OnStart()
     {
-        // use waypoint array if set, otherwise fall back to A/B
         if (waypoints != null && waypoints.Length > 1)
         {
             waypointIndex = 0;
@@ -39,38 +38,32 @@ public class EnemyAI : EnemyBase
     {
         if (currentTarget == null) return;
 
-        // pause at waypoint - rotate head to look around, don't move
         if (pauseTimer > 0f)
         {
             pauseTimer -= Time.fixedDeltaTime;
 
-            // sweep facing direction left/right to simulate 'checking'
             float angle = transform.eulerAngles.z + lookDirection * lookAroundSpeed * Time.fixedDeltaTime;
             transform.rotation = Quaternion.Euler(0, 0, angle);
 
-            // flip direction partway through the pause so they look both ways
+            // look the other way after halfway
             if (pauseTimer < pauseAtWaypoint * 0.5f && lookDirection > 0f)
                 lookDirection = -1f;
 
             return;
         }
 
-        // move toward current target
         Vector2 newPos = Vector2.MoveTowards(rb.position, currentTarget.position, patrolSpeed * Time.fixedDeltaTime);
         rb.MovePosition(newPos);
         FaceDirection(currentTarget.position - transform.position);
 
-        // arrived at waypoint
         if (Vector2.Distance(transform.position, currentTarget.position) < 0.4f)
         {
-            // start pausing if pause time is set
             if (pauseAtWaypoint > 0f)
             {
                 pauseTimer = pauseAtWaypoint;
                 lookDirection = 1f;
             }
 
-            // pick next waypoint
             PickNextWaypoint();
         }
     }
@@ -81,22 +74,23 @@ public class EnemyAI : EnemyBase
         {
             if (randomOrder)
             {
-                // pick a different one than current
                 int newIndex;
                 do { newIndex = Random.Range(0, waypoints.Length); }
-                while (newIndex == waypointIndex && waypoints.Length > 1);
+                while (newIndex == waypointIndex);
+
                 waypointIndex = newIndex;
             }
             else
             {
                 waypointIndex = (waypointIndex + 1) % waypoints.Length;
             }
+
             currentTarget = waypoints[waypointIndex];
         }
         else
         {
-            // classic A <-> B ping pong
-            currentTarget = (currentTarget == pointA) ? pointB : pointA;
+            if (currentTarget == pointA) currentTarget = pointB;
+            else currentTarget = pointA;
         }
     }
 

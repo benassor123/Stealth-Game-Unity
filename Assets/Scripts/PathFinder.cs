@@ -1,93 +1,99 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// A* pathfinding. Call FindPath(start, end) to get a list of waypoints.
-// Returns an empty list if no path exists.
+// A* Algorithm, using pathfindings grid of the level for enemy movement.
+
 public static class Pathfinder
 {
-    public static List<Vector2> FindPath(Vector2 startWorld, Vector2 endWorld)
+
+    public static List<Vector2> FindPath(Vector2 startWorld, Vector2 endWorld) // two world cords, where now,  where to go
     {
-        if (PathfindingGrid.Instance == null) return new List<Vector2>();
+        if (PathfindingGrid.Instance == null) return new List<Vector2>(); // ensure theres a grid if not return empty list for now. we need the grid for this to work
 
-        Node startNode = PathfindingGrid.Instance.NodeFromWorldPos(startWorld);
-        Node endNode = PathfindingGrid.Instance.NodeFromWorldPos(endWorld);
+        Node startNode = PathfindingGrid.Instance.NodeFromWorldPos(startWorld); // returns the cell/node the enemy is in 
+        Node endNode = PathfindingGrid.Instance.NodeFromWorldPos(endWorld); // returns the cell the enemy wants to go to 
 
-        if (!startNode.walkable || !endNode.walkable) return new List<Vector2>();
 
-        // open list = nodes we plan to look at, closed list = nodes we've already processed
-        List<Node> openSet = new List<Node>();
-        HashSet<Node> closedSet = new HashSet<Node>();
-        openSet.Add(startNode);
+        // now lets determine if start or end is a wall
+        if (!startNode.walkable || !endNode.walkable) return new List<Vector2>(); // grids store nodes, in each node is walkable attribute explaining if theres a wall at current
 
-        // reset A* costs (the Node fields are reused between searches)
-        startNode.gCost = 0;
-        startNode.hCost = Distance(startNode, endNode);
-        startNode.parent = null;
 
-        while (openSet.Count > 0)
+        List<Node> openSet = new List<Node>();  //nodes to examine next
+        List<Node> closedSet = new List<Node>(); // nodes that have been exammined
+        openSet.Add(startNode); // lets add start node
+
+        startNode.gCost = 0; // to reach start node from start  wil be 0, set to zero .
+
+        startNode.hCost = Distance(startNode, endNode); // estimated cost from start to end - a heuristic, using distance() function
+        startNode.parent = null; // set to null for now, startnode is the start node , theres no parent 
+
+        while (openSet.Count > 0) //keep going whilst not empty
         {
-            // pick the node with the lowest F cost (most promising)
-            Node current = openSet[0];
+            Node current = openSet[0]; // 
+
             for (int i = 1; i < openSet.Count; i++)
             {
-                if (openSet[i].FCost < current.FCost ||
-                    (openSet[i].FCost == current.FCost && openSet[i].hCost < current.hCost))
-                    current = openSet[i];
+                Node n = openSet[i];
+                bool betterF = n.FCost < current.FCost;
+                bool betterH = n.FCost == current.FCost && n.hCost < current.hCost;
+                if (betterF || betterH) //if theres a better f or h, update current to n iteration
+                {
+                    current = n;
+                }
             }
-
             openSet.Remove(current);
             closedSet.Add(current);
 
-            // reached the goal - reconstruct path and return it
             if (current == endNode)
+            {
                 return Retrace(startNode, endNode);
+            }
 
-            // examine each walkable neighbour
+            // loop through neighbours
             foreach (Node neighbour in PathfindingGrid.Instance.GetNeighbours(current))
             {
-                if (!neighbour.walkable || closedSet.Contains(neighbour)) continue;
+                if (!neighbour.walkable) continue;
+                if (closedSet.Contains(neighbour)) continue;
 
-                int tentativeG = current.gCost + Distance(current, neighbour);
+                int newG = current.gCost + Distance(current, neighbour);
 
-                // only update neighbour if we found a cheaper way to reach it
-                if (tentativeG < neighbour.gCost || !openSet.Contains(neighbour))
+                if (newG < neighbour.gCost || !openSet.Contains(neighbour))
                 {
-                    neighbour.gCost = tentativeG;
+                    neighbour.gCost = newG;
                     neighbour.hCost = Distance(neighbour, endNode);
                     neighbour.parent = current;
 
                     if (!openSet.Contains(neighbour))
+                    {
                         openSet.Add(neighbour);
+                    }
                 }
             }
         }
 
-        // no path found
         return new List<Vector2>();
     }
 
-    // walk backwards from end to start via parent links, then reverse
-    static List<Vector2> Retrace(Node start, Node end)
+    static List<Vector2> Retrace(Node start, Node end)  //trace path backwards
     {
         List<Vector2> path = new List<Vector2>();
         Node current = end;
+
         while (current != start)
         {
             path.Add(current.worldPos);
             current = current.parent;
         }
+
         path.Reverse();
         return path;
     }
 
-    // diagonal distance heuristic - 14 for diagonal, 10 for straight
-    // (multiplied by 10 to stay in integers, which is faster than floats)
+
     static int Distance(Node a, Node b)
     {
         int dx = Mathf.Abs(a.gridX - b.gridX);
         int dy = Mathf.Abs(a.gridY - b.gridY);
-        if (dx > dy)
-            return 14 * dy + 10 * (dx - dy);
-        return 14 * dx + 10 * (dy - dx);
+        return (int)(Mathf.Sqrt(dx * dx + dy * dy) * 10);
     }
 }

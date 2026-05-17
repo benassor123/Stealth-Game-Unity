@@ -3,50 +3,42 @@ using UnityEngine;
 public class StationaryEnem : EnemyBase
 {
     [Header("Task")]
-    public Transform taskFocusPoint;
-    public Sprite taskSpriteA;
-    public Sprite taskSpriteB;
-    public float taskSwapInterval = 0.5f;
+    public Transform focusPoint;
+    public Sprite workSprite1;
+    public Sprite workSprite2;
+    public float frameTime = 0.5f;
 
-    float swapTimer = 0f;
-    bool showingA = true;
+    float frameTimer;
+    bool onFrame1 = true;
 
     protected override void OnStart()
     {
-        if (taskFocusPoint != null)
-            FaceDirection(taskFocusPoint.position - transform.position);
+        if (focusPoint != null)
+            FaceDirection(focusPoint.position - transform.position);
     }
 
     protected override void IdleUpdate()
     {
-        if (taskFocusPoint != null)
-            FaceDirection(taskFocusPoint.position - transform.position);
+        if (focusPoint != null)
+            FaceDirection(focusPoint.position - transform.position);
     }
-
-    // no ChaseFixedUpdate override - inherits base behaviour:
-    // - melee: close to punch range
-    // - with gun: maintain shoot range (close/back off as needed)
 
     protected override void UpdateSprites()
     {
-        if (isPunching) return;
-        if (ranged != null && ranged.IsShooting) return;
+        base.UpdateSprites();
 
-        if (state == "chase" || state == "alert")
+        if (state != "idle") return;
+        if (workSprite1 == null || workSprite2 == null) return;
+
+        frameTimer += Time.deltaTime;
+
+        if (frameTimer >= frameTime)
         {
-            if (chaseSprite != null) sr.sprite = chaseSprite;
-            return;
-        }
+            frameTimer = 0f;
+            onFrame1 = !onFrame1;
 
-        // idle - swap task sprites
-        if (taskSpriteA == null || taskSpriteB == null) return;
-
-        swapTimer += Time.deltaTime;
-        if (swapTimer >= taskSwapInterval)
-        {
-            swapTimer = 0f;
-            showingA = !showingA;
-            sr.sprite = showingA ? taskSpriteA : taskSpriteB;
+            if (onFrame1) sr.sprite = workSprite1;
+            else sr.sprite = workSprite2;
         }
     }
 }

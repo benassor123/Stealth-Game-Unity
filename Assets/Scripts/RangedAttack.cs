@@ -1,7 +1,5 @@
 using UnityEngine;
 
-// Attach this alongside any enemy to give them a gun.
-// EnemyBase detects and uses it automatically.
 public class RangedAttack : MonoBehaviour
 {
     public GameObject bulletPrefab;
@@ -9,13 +7,11 @@ public class RangedAttack : MonoBehaviour
     public float shootRange = 6f;
     public float shootCooldown = 1.5f;
     public Sprite shootSprite;
+    public float damageOverride = 0f;
 
-    [Header("Damage Override (optional)")]
-    public float damageOverride = 0f;   // if > 0, replaces the bullet prefab's damage. leave at 0 to use default.
-
-    float cooldownTimer = 0f;
-    float animTimer = 0f;
-    bool isShooting = false;
+    float cooldownTimer;
+    float animTimer;
+    bool isShooting;
     SpriteRenderer sr;
 
     void Awake()
@@ -25,14 +21,12 @@ public class RangedAttack : MonoBehaviour
 
     void Update()
     {
-        if (cooldownTimer > 0f)
-            cooldownTimer -= Time.deltaTime;
+        if (cooldownTimer > 0f) cooldownTimer -= Time.deltaTime;
 
         if (isShooting)
         {
             animTimer -= Time.deltaTime;
-            if (animTimer <= 0f)
-                isShooting = false;
+            if (animTimer <= 0f) isShooting = false;
         }
     }
 
@@ -47,24 +41,22 @@ public class RangedAttack : MonoBehaviour
         isShooting = true;
         animTimer = 0.25f;
 
-        if (shootSprite != null && sr != null)
-            sr.sprite = shootSprite;
+        if (shootSprite != null && sr != null) sr.sprite = shootSprite;
 
-        Vector2 dir = ((Vector2)targetPos - (Vector2)transform.position).normalized;
+        Vector2 dir = (targetPos - transform.position).normalized;
 
-        if (bulletPrefab != null)
+        if (bulletPrefab == null) return;
+
+        Vector3 spawnPos = transform.position + (Vector3)(dir * 0.5f);
+        GameObject b = Instantiate(bulletPrefab, spawnPos, transform.rotation);
+
+        Rigidbody2D brb = b.GetComponent<Rigidbody2D>();
+        if (brb != null) brb.linearVelocity = dir * bulletSpeed;
+
+        if (damageOverride > 0f)
         {
-            GameObject b = Instantiate(bulletPrefab, transform.position + (Vector3)(dir * 0.6f), transform.rotation);
-
-            Rigidbody2D brb = b.GetComponent<Rigidbody2D>();
-            if (brb != null) brb.linearVelocity = dir * bulletSpeed;
-
-            // apply damage override if set
-            if (damageOverride > 0f)
-            {
-                EnemyBullet eb = b.GetComponent<EnemyBullet>();
-                if (eb != null) eb.damage = damageOverride;
-            }
+            EnemyBullet eb = b.GetComponent<EnemyBullet>();
+            if (eb != null) eb.damage = damageOverride;
         }
 
         Debug.Log(name + " fired");

@@ -7,23 +7,28 @@ public class EnemyBullet : MonoBehaviour
 
     void Start()
     {
-        Destroy(gameObject, lifetime);
+        Destroy(gameObject, lifetime);  // die after a few seconds if dont hit anything
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    void OnTriggerEnter2D(Collider2D collision)
     {
-        if (other.CompareTag("Player"))
+        if (collision.CompareTag("Player"))
         {
             HUD hud = FindFirstObjectByType<HUD>();
+
             if (hud != null) hud.TakeDamage(damage);
+
             Destroy(gameObject);
             return;
         }
 
-        if (other.CompareTag("Enemy")) return;
-        if (other.GetComponent<SecurityCamera>() != null) return;
 
-        if (!other.isTrigger)
-            Destroy(gameObject);
+        if (collision.CompareTag("Enemy")) return;
+        if (collision.GetComponent<SecurityCamera>() != null) return;
+
+
+
+
+        if (!collision.isTrigger) Destroy(gameObject);
     }
 }

@@ -1,87 +1,94 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-// Holds the grid of pathfinding nodes for the whole level.
-// Scans for walls once at Start and builds a 2D array of Nodes.
-// Place one of these in each level scene.
 public class PathfindingGrid : MonoBehaviour
 {
     [Header("Grid")]
-    public Vector2 gridWorldSize = new Vector2(40, 30);  // how big the level is in world units
-    public float nodeSize = 1f;                          // size of each grid square
-    public LayerMask wallLayer;                          // what counts as unwalkable
+    public Vector2 gridWorldSize = new Vector2(40, 30);
+    public float nodeSize = 1f;
+    public LayerMask wallLayer; //layer mask lets us filter physics checks by layer - this is to check only for walls as blocked path.
 
     [Header("Debug")]
-    public bool drawGizmos = true;
+    public bool drawGizmos = true; // green for floor, red for walls
 
-    Node[,] grid;
-    int gridWidth;
-    int gridHeight;
+    Node[,] grid; //2d arr
+    int gridWidth; //width dimensions
+    int gridHeight; //height dimensions
 
-    // singleton-ish accessor so enemies can find this easily
-    public static PathfindingGrid Instance { get; private set; }
+    public static PathfindingGrid Instance;
 
-    void Awake()
+    void Awake() // awake is more suited than start to ensure grid  created before game begins
     {
         Instance = this;
         BuildGrid();
     }
-
-    void BuildGrid()
+    void BuildGrid() //build grid for what is walkable, what is not.
     {
         gridWidth = Mathf.RoundToInt(gridWorldSize.x / nodeSize);
         gridHeight = Mathf.RoundToInt(gridWorldSize.y / nodeSize);
         grid = new Node[gridWidth, gridHeight];
 
-        // bottom-left corner of the grid in world space
         Vector2 origin = (Vector2)transform.position - gridWorldSize * 0.5f;
+        float halfNode = nodeSize * 0.5f;
 
         for (int x = 0; x < gridWidth; x++)
         {
             for (int y = 0; y < gridHeight; y++)
             {
-                Vector2 worldPos = origin + new Vector2(x * nodeSize + nodeSize * 0.5f,
-                                                        y * nodeSize + nodeSize * 0.5f);
-                // slightly smaller check radius so diagonal wall corners don't overly block
+                // cell centre in world space
+                float cellX = origin.x + x * nodeSize + halfNode;
+                float cellY = origin.y + y * nodeSize + halfNode;
+                Vector2 worldPos = new Vector2(cellX, cellY);
+
                 bool walkable = !Physics2D.OverlapCircle(worldPos, nodeSize * 0.4f, wallLayer);
                 grid[x, y] = new Node(x, y, worldPos, walkable);
             }
         }
     }
-
-    // get the grid node at a given world position
-    public Node NodeFromWorldPos(Vector2 worldPos)
+    public Node NodeFromWorldPos(Vector2 worldPos)  //convert pos in Unity to find grid cell
     {
-        Vector2 origin = (Vector2)transform.position - gridWorldSize * 0.5f;
-        Vector2 local = worldPos - origin;
+        Vector2 origin = (Vector2)transform.position - gridWorldSize * 0.5f; // find where grids origin [0,0] is in unity space
+        Vector2 local = worldPos - origin; // how far worldPos(passed in) is from grids origin
 
-        int x = Mathf.Clamp(Mathf.FloorToInt(local.x / nodeSize), 0, gridWidth - 1);
-        int y = Mathf.Clamp(Mathf.FloorToInt(local.y / nodeSize), 0, gridHeight - 1);
-        return grid[x, y];
+
+        //convert to grid space
+        int x = Mathf.FloorToInt(local.x / nodeSize);
+        int y = Mathf.FloorToInt(local.y / nodeSize);
+
+        // clamp so positions outside the grid return the nearest edge cell
+        x = Mathf.Clamp(x, 0, gridWidth - 1);
+        y = Mathf.Clamp(y, 0, gridHeight - 1);
+
+        return grid[x, y]; // now return 
     }
-
-    // return walkable neighbours of a node (up to 8)
-    public System.Collections.Generic.List<Node> GetNeighbours(Node node)
+    public List<Node> GetNeighbours(Node node)
     {
-        var list = new System.Collections.Generic.List<Node>();
+        List<Node> neighbours = new List<Node>();
 
-        for (int dx = -1; dx <= 1; dx++)
+        for (int x = -1; x <= 1; x++)
         {
-            for (int dy = -1; dy <= 1; dy++)
+            for (int y = -1; y <= 1; y++)
             {
-                if (dx == 0 && dy == 0) continue;   // skip self
+                if (x == 0 && y == 0)
+                    continue;
 
-                int nx = node.gridX + dx;
-                int ny = node.gridY + dy;
+                int checkX = node.gridX + x;
 
-                if (nx < 0 || nx >= gridWidth || ny < 0 || ny >= gridHeight) continue;
-                list.Add(grid[nx, ny]);
+                int checkY = node.gridY + y;
+
+                if (checkX < 0 || checkX >= gridWidth)
+                    continue;
+
+                if (checkY < 0 || checkY >= gridHeight)
+                    continue;
+
+                neighbours.Add(grid[checkX, checkY]);
             }
         }
 
-        return list;
+        return neighbours;
     }
 
-    // visualise the grid in the Scene view - green = walkable, red = blocked
     void OnDrawGizmos()
     {
         if (!drawGizmos) return;
@@ -95,9 +102,14 @@ public class PathfindingGrid : MonoBehaviour
         {
             for (int y = 0; y < gridHeight; y++)
             {
-                Node n = grid[x, y];
-                Gizmos.color = n.walkable ? new Color(0f, 1f, 0f, 0.2f) : new Color(1f, 0f, 0f, 0.4f);
-                Gizmos.DrawCube(n.worldPos, Vector3.one * (nodeSize * 0.9f));
+                Node node = grid[x, y];
+
+                if (node.walkable)
+                    Gizmos.color = new Color(0f, 1f, 0f, 0.2f); // green
+                else
+                    Gizmos.color = new Color(1f, 0f, 0f, 0.4f); // red
+
+                Gizmos.DrawCube(node.worldPos, Vector3.one * (nodeSize * 0.9f));
             }
         }
     }

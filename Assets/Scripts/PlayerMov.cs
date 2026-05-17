@@ -41,11 +41,14 @@ public class PlayerMov : MonoBehaviour
         {
             float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(0, 0, angle);
-            sr.sprite = gunDrawn ? gunSprite : moveSprite;
+
+            if (gunDrawn) sr.sprite = gunSprite;
+            else sr.sprite = moveSprite;
         }
         else
         {
-            sr.sprite = gunDrawn ? gunSprite : idleSprite;
+            if (gunDrawn) sr.sprite = gunSprite;
+            else sr.sprite = idleSprite;
         }
     }
 }

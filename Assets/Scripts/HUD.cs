@@ -86,7 +86,6 @@ public class HUD : MonoBehaviour
         }
     }
 
-    // ── called by other scripts ──
 
     public void TakeDamage(float amount)
     {
