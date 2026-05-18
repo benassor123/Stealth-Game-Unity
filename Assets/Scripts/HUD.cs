@@ -38,17 +38,14 @@ public class HUD : MonoBehaviour
 
         if (pausePanel != null) pausePanel.SetActive(false);
 
-        if (healthBarFill != null)
-            healthBarFullWidth = healthBarFill.rect.width;
-
+        if (healthBarFill == null) return;
+        healthBarFullWidth = healthBarFill.rect.width;
         UpdateHealthUI();
     }
 
     void Update()
     {
-        if (Keyboard.current.escapeKey.wasPressedThisFrame)
-            TogglePause();
-
+        if (Keyboard.current.escapeKey.wasPressedThisFrame) TogglePause();
         if (paused) return;
 
         timer += Time.deltaTime;
@@ -57,35 +54,33 @@ public class HUD : MonoBehaviour
         {
             int mins = (int)(timer / 60f);
             int secs = (int)(timer % 60f);
-            timerText.text = mins.ToString("00") + ":" + secs.ToString("00");
+
+            string minsStr = mins.ToString();
+            string secsStr = secs.ToString();
+            if (mins < 10) minsStr = "0" + mins;
+            if (secs < 10) secsStr = "0" + secs;
+            timerText.text = minsStr + ":" + secsStr;
         }
 
-        if (floorText != null)
-            floorText.text = "FLOOR " + currentFloor;
-
-        if (keysText != null)
-            keysText.text = "x " + Keycard.keycardCount;
-
-        if (ammoText != null)
-            ammoText.text = "x " + ammo;
-
-        if (smokeText != null)
-            smokeText.text = "x " + smokeBombs;
+        if (floorText != null) floorText.text = "Floor " + currentFloor;
+        if (keysText != null) keysText.text = "x " + Keycard.keycardCount;
+        if (ammoText != null) ammoText.text = "x " + ammo;
+        if (smokeText != null) smokeText.text = "x " + smokeBombs;
     }
 
     void UpdateHealthUI()
     {
         if (healthText != null)
-            healthText.text = currentHealth.ToString("F0") + " / " + maxHealth.ToString("F0");
-
-        if (healthBarFill != null)
         {
-            float ratio = currentHealth / maxHealth;
-            healthBarFill.SetSizeWithCurrentAnchors(
-                RectTransform.Axis.Horizontal, healthBarFullWidth * ratio);
+            string current = ((int)currentHealth).ToString();
+            string max = ((int)maxHealth).ToString();
+            healthText.text = current + " / " + max;
         }
-    }
 
+        if (healthBarFill == null) return;
+        float ratio = currentHealth / maxHealth;
+        healthBarFill.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, healthBarFullWidth * ratio);
+    }
 
     public void TakeDamage(float amount)
     {
@@ -93,11 +88,9 @@ public class HUD : MonoBehaviour
         if (currentHealth < 0f) currentHealth = 0f;
         UpdateHealthUI();
 
-        if (currentHealth <= 0f)
-        {
-            Debug.Log("DEAD - Game Over");
-            Time.timeScale = 0f;
-        }
+        if (currentHealth > 0f) return;
+        Debug.Log("DEAD - Game Over");
+        Time.timeScale = 0f;
     }
 
     public void Heal(float amount)
@@ -140,7 +133,12 @@ public class HUD : MonoBehaviour
     public void TogglePause()
     {
         paused = !paused;
-        Time.timeScale = paused ? 0f : 1f;
+
+        if (paused)
+            Time.timeScale = 0f;
+        else
+            Time.timeScale = 1f;
+
         if (pausePanel != null) pausePanel.SetActive(paused);
     }
 }

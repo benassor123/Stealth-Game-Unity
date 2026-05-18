@@ -7,9 +7,9 @@ public class TutorialTrigger : MonoBehaviour
     [Header("What to show")]
     public string title = "Tip";
     [TextArea(2, 4)]
-    public string message = "Tutorial message here";
+    public string message = " ";
 
-    [Header("UI (drag the same panel into every trigger)")]
+    [Header("UI")]
     public GameObject promptPanel;
     public TextMeshProUGUI titleText;
     public TextMeshProUGUI messageText;

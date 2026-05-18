@@ -6,28 +6,26 @@ public class Keycard : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("Keycard spawned at " + transform.position);
+        Debug.Log("Keycard now at -  " + transform.position);
     }
 
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("Keycard trigger hit by: " + other.name + " tag: " + other.tag);
         if (other.CompareTag("Player"))
         {
             keycardCount++;
-            Debug.Log("KEYCARD PICKED UP! Total: " + keycardCount);
+            Debug.Log("Keycard count total - " + keycardCount);
             Destroy(gameObject);
         }
     }
 
     void OnCollisionEnter2D(Collision2D col)
     {
-        Debug.Log("Keycard collision with: " + col.gameObject.name + " tag: " + col.gameObject.tag);
         if (col.gameObject.CompareTag("Player"))
         {
             keycardCount++;
-            Debug.Log("KEYCARD PICKED UP! Total: " + keycardCount);
+            Debug.Log("keycard picked up, keycardcount total -  " + keycardCount);
             Destroy(gameObject);
         }
     }

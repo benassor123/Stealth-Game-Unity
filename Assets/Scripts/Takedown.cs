@@ -24,14 +24,13 @@ public class Takedown : MonoBehaviour
 
 
 
-        if (Vector2.Dot(facing, toPlayer) < 0f) // works out angle
+        if (Vector2.Dot(facing, toPlayer) < 0f)
             target.OnTakedown();
-        else
-            Debug.Log("get behind the enmy");
+
     }
     EnemyBase FindNearestInRange()
     {
-        EnemyBase[] enemies = FindObjectsByType<EnemyBase>(FindObjectsSortMode.None); // finds all enemy types
+        EnemyBase[] enemies = FindObjectsByType<EnemyBase>(FindObjectsSortMode.None);
         EnemyBase closest = null;
         float closestDist = range;
 
@@ -39,9 +38,9 @@ public class Takedown : MonoBehaviour
         {
             float dist = Vector2.Distance(transform.position, enemy.transform.position);
 
-            if (dist > range) continue;          // outside range, skip
+            if (dist > range) continue;
 
-            if (dist < closestDist)              // closer than our current best
+            if (dist < closestDist)
             {
                 closest = enemy;
                 closestDist = dist;

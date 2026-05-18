@@ -11,7 +11,7 @@ public class ExitDoor : MonoBehaviour
     {
         if (playerInRange && Keyboard.current.eKey.wasPressedThisFrame)
         {
-            Debug.Log("Loading next floor...");
+            Debug.Log("Loading next floor");
             Time.timeScale = 1f;
             SceneManager.LoadScene(nextSceneName);
         }

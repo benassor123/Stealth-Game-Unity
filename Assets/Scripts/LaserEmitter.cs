@@ -18,16 +18,21 @@ public class LaserEmitter : MonoBehaviour
     SpriteRenderer sr;
     int hitsTaken;
     bool destroyed;
-    Transform target;    // current patrol target
+    bool headingToB;
 
-    public bool IsAlive { get { return !destroyed; } }
+    public bool IsAlive
+    {
+        get { return !destroyed; }
+    }
 
     void Start()
     {
         sr = GetComponent<SpriteRenderer>();
-        if (aliveSprite != null && sr != null) sr.sprite = aliveSprite;
+        headingToB = false;
 
-        target = pointA;
+        if (aliveSprite == null) return;
+        if (sr == null) return;
+        sr.sprite = aliveSprite;
     }
 
     void FixedUpdate()
@@ -35,28 +40,31 @@ public class LaserEmitter : MonoBehaviour
         if (destroyed) return;
         if (pointA == null || pointB == null) return;
 
-        // move toward current patrol target
+        Transform target = pointA;
+        if (headingToB) target = pointB;
+
         Vector2 newPos = Vector2.MoveTowards(transform.position, target.position, moveSpeed * Time.fixedDeltaTime);
         transform.position = newPos;
 
-        // reached target? swap
         if (Vector2.Distance(transform.position, target.position) < 0.05f)
-            target = (target == pointA) ? pointB : pointA;
+        {
+            headingToB = !headingToB;
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
         if (destroyed) return;
+        if (!other.CompareTag("Bullet")) return;
 
-        if (other.CompareTag("Bullet"))
-        {
-            hitsTaken++;
-            Destroy(other.gameObject);
-            if (hitsTaken >= shotsToDestroy) Break();
-        }
+        hitsTaken++;
+        Destroy(other.gameObject);
+        if (
+            hitsTaken >= shotsToDestroy
+            )
+            Break();
     }
 
-    // called by Takedown.cs when the player punches this emitter
     public void PunchHit()
     {
         if (destroyed) return;
@@ -67,6 +75,6 @@ public class LaserEmitter : MonoBehaviour
     {
         destroyed = true;
         if (destroyedSprite != null && sr != null) sr.sprite = destroyedSprite;
-        Debug.Log(name + " destroyed");
+        Debug.Log(name + "destroyed");
     }
 }
