@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 35af134766468402eb0ea156507181d9
+guid: d260f3640964b4221a86d547e2316ae6
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3573036208370857778
-    second: download_0
+      213: 5207488016607335045
+    second: cctv-camera_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: download_0
+      name: cctv-camera_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 225
-        height: 224
+        x: 32
+        y: 64
+        width: 446
+        height: 378
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 237bd813089f59130800000000000000
-      internalID: 3573036208370857778
+      spriteID: 582dbf9b2c6b44840800000000000000
+      internalID: 5207488016607335045
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      download_0: 3573036208370857778
+      cctv-camera_0: 5207488016607335045
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

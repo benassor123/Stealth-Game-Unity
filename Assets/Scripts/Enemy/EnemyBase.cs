@@ -537,6 +537,8 @@ public class EnemyBase : MonoBehaviour
     }
     protected bool CanSeePlayer()
     {
+        if (SmokeCloud.InSmoke(transform.position)) return false;
+        if (SmokeCloud.InSmoke(player.position)) return false;
         Vector2 dir = player.position - transform.position;
         float dist = dir.magnitude;
 

@@ -1,10 +1,13 @@
 fileFormatVersion: 2
-guid: d04b4e1dbdc014c84bb93f02ea47659a
+guid: 8a36dbd734fb94efc94f8a176d111060
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -563110032544038821
-    second: cctv-camera-2_0
+      213: 1030738652212078961
+    second: "\u2014Pngtree\u2014thin smoke rises up isolated_9023265_0"
+  - first:
+      213: -7004672546376230554
+    second: "\u2014Pngtree\u2014thin smoke rises up isolated_9023265_1"
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +116,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: cctv-camera-2_0
+      name: "\u2014Pngtree\u2014thin smoke rises up isolated_9023265_0"
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1024
-        height: 1024
+        width: 3000
+        height: 1691
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +131,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b5001cca86e6f28f0800000000000000
-      internalID: -563110032544038821
+      spriteID: 179ad55d75bed4e00800000000000000
+      internalID: 1030738652212078961
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "\u2014Pngtree\u2014thin smoke rises up isolated_9023265_1"
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 1684
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66950517e676ace90800000000000000
+      internalID: -7004672546376230554
       vertices: []
       indices: 
       edges: []
@@ -148,7 +173,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      cctv-camera-2_0: -563110032544038821
+      "\u2014Pngtree\u2014thin smoke rises up isolated_9023265_0": 1030738652212078961
+      "\u2014Pngtree\u2014thin smoke rises up isolated_9023265_1": -7004672546376230554
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

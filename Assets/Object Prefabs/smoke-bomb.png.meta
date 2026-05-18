@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 3d35be213101a41148e40f0f219a28d1
+guid: 0d0f8cb3cbe0f4ccead960232880696c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4578270844786959238
-    second: Screenshot 2026-05-17 at 19.07.37 (2)_0
+      213: 6103957685093546286
+    second: smoke-bomb_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Screenshot 2026-05-17 at 19.07.37 (2)_0
+      name: smoke-bomb_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 1920
-        height: 1080
+        x: 103
+        y: 15
+        width: 274
+        height: 482
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a7c12f26ce6b670c0800000000000000
-      internalID: -4578270844786959238
+      spriteID: e293408ac2d95b450800000000000000
+      internalID: 6103957685093546286
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Screenshot 2026-05-17 at 19.07.37 (2)_0: -4578270844786959238
+      smoke-bomb_0: 6103957685093546286
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

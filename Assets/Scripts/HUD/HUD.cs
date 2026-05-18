@@ -141,4 +141,9 @@ public class HUD : MonoBehaviour
 
         if (pausePanel != null) pausePanel.SetActive(paused);
     }
+
+    public int GetSmokeBombs()
+    {
+        return smokeBombs;
+    }
 }
