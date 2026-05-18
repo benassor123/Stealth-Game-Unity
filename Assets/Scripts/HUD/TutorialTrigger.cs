@@ -4,7 +4,7 @@ using TMPro;
 
 public class TutorialTrigger : MonoBehaviour
 {
-    [Header("What to show")]
+    [Header("uI")]
     public string title = "Tip";
     [TextArea(2, 4)]
     public string message = " ";

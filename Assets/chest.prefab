@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8434669630134305709}
   - component: {fileID: 2280255703212936452}
   - component: {fileID: 665758100359345878}
-  - component: {fileID: 3571443174716855166}
+  - component: {fileID: 3434283392816384474}
   m_Layer: 0
   m_Name: chest
   m_TagString: Untagged
@@ -139,7 +139,7 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.18, y: 0.15}
   m_EdgeRadius: 0
---- !u!114 &3571443174716855166
+--- !u!114 &3434283392816384474
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -148,9 +148,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 7548416733464387444}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e9f5019856e84271aa9aead70f31ec1, type: 3}
+  m_Script: {fileID: 11500000, guid: 83942f3580a914ba8a80d61382723760, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chest
   closedSprite: {fileID: -2013878113335304337, guid: e1a2dd1b042524a55a953b2effc51fc9, type: 3}
-  openSprite: {fileID: 5008953516620763445, guid: e1a2dd1b042524a55a953b2effc51fc9, type: 3}
+  openSprite: {fileID: 2284389185714935326, guid: e1a2dd1b042524a55a953b2effc51fc9, type: 3}
   requiresKeycard: 1

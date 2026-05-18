@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1652600098043744688}
   - component: {fileID: 1195772741574388910}
   - component: {fileID: 8834600554901418327}
-  - component: {fileID: 5688232908321848157}
+  - component: {fileID: 5804023594785737564}
   m_Layer: 0
   m_Name: keycard
   m_TagString: Untagged
@@ -139,7 +139,7 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &5688232908321848157
+--- !u!114 &5804023594785737564
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -148,6 +148,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1283752816519849385}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc5852f9fd1004c6f896cf4e434ad544, type: 3}
+  m_Script: {fileID: 11500000, guid: d10c70ee36dd54fa4b9dd9b97e0d55e1, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::keycard
+  m_EditorClassIdentifier: Assembly-CSharp::Keycard

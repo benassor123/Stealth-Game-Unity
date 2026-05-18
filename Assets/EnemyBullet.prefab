@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 394023645019449687}
   - component: {fileID: 6896563650127346929}
   - component: {fileID: 1380642489963492260}
-  - component: {fileID: 7742666270880535000}
+  - component: {fileID: -1128097424303263557}
   m_Layer: 0
   m_Name: EnemyBullet
   m_TagString: Untagged
@@ -157,7 +157,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &7742666270880535000
+--- !u!114 &-1128097424303263557
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -166,7 +166,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4983368195610863133}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d13717953bd0f473694cf71fc8c23aa4, type: 3}
+  m_Script: {fileID: 11500000, guid: 7a29c20a813e54d79ac001e9d0e04727, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyBullet
   damage: 20
