@@ -9,7 +9,7 @@ public class Keycard : MonoBehaviour
         Debug.Log("Keycard spawned at " + transform.position);
     }
 
-    // works if collider has Is Trigger ticked
+
     void OnTriggerEnter2D(Collider2D other)
     {
         Debug.Log("Keycard trigger hit by: " + other.name + " tag: " + other.tag);
@@ -21,7 +21,6 @@ public class Keycard : MonoBehaviour
         }
     }
 
-    // fallback if collider does NOT have Is Trigger ticked
     void OnCollisionEnter2D(Collision2D col)
     {
         Debug.Log("Keycard collision with: " + col.gameObject.name + " tag: " + col.gameObject.tag);

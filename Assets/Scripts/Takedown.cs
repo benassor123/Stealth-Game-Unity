@@ -12,35 +12,42 @@ public class Takedown : MonoBehaviour
     }
 
     void TryTakedown()
+
     {
         EnemyBase target = FindNearestInRange();
+
         if (target == null) return;
 
         Vector2 facing = target.transform.right;
-        Vector2 toPlayer = ((Vector2)transform.position - (Vector2)target.transform.position).normalized;
 
-        if (Vector2.Dot(facing, toPlayer) < 0f)
+        Vector2 toPlayer = (transform.position - target.transform.position).normalized;
+
+
+
+        if (Vector2.Dot(facing, toPlayer) < 0f) // works out angle
             target.OnTakedown();
         else
-            Debug.Log("get behind them");
+            Debug.Log("get behind the enmy");
     }
-
     EnemyBase FindNearestInRange()
     {
-        EnemyBase[] enemies = FindObjectsByType<EnemyBase>(FindObjectsSortMode.None);
-        EnemyBase best = null;
-        float bestDist = range;
+        EnemyBase[] enemies = FindObjectsByType<EnemyBase>(FindObjectsSortMode.None); // finds all enemy types
+        EnemyBase closest = null;
+        float closestDist = range;
 
-        foreach (EnemyBase e in enemies)
+        foreach (EnemyBase enemy in enemies)
         {
-            float d = Vector2.Distance(transform.position, e.transform.position);
-            if (d < bestDist)
+            float dist = Vector2.Distance(transform.position, enemy.transform.position);
+
+            if (dist > range) continue;          // outside range, skip
+
+            if (dist < closestDist)              // closer than our current best
             {
-                bestDist = d;
-                best = e;
+                closest = enemy;
+                closestDist = dist;
             }
         }
 
-        return best;
+        return closest;
     }
 }

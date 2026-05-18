@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class EnemyAI : EnemyBase
+public class PatrolEnemy : EnemyBase
 {
     [Header("Patrol A-B")]
     public Transform pointA;
@@ -12,14 +12,10 @@ public class EnemyAI : EnemyBase
 
     [Header("Patrol Behaviour")]
     public float patrolSpeed = 2f;
-    public float pauseAtWaypoint;
-    public float lookAroundSpeed = 60f;
     public Sprite normalSprite;
 
     Transform currentTarget;
     int waypointIndex;
-    float pauseTimer;
-    float lookDirection = 1f;
 
     protected override void OnStart()
     {
@@ -38,34 +34,12 @@ public class EnemyAI : EnemyBase
     {
         if (currentTarget == null) return;
 
-        if (pauseTimer > 0f)
-        {
-            pauseTimer -= Time.fixedDeltaTime;
-
-            float angle = transform.eulerAngles.z + lookDirection * lookAroundSpeed * Time.fixedDeltaTime;
-            transform.rotation = Quaternion.Euler(0, 0, angle);
-
-            // look the other way after halfway
-            if (pauseTimer < pauseAtWaypoint * 0.5f && lookDirection > 0f)
-                lookDirection = -1f;
-
-            return;
-        }
-
         Vector2 newPos = Vector2.MoveTowards(rb.position, currentTarget.position, patrolSpeed * Time.fixedDeltaTime);
         rb.MovePosition(newPos);
         FaceDirection(currentTarget.position - transform.position);
 
         if (Vector2.Distance(transform.position, currentTarget.position) < 0.4f)
-        {
-            if (pauseAtWaypoint > 0f)
-            {
-                pauseTimer = pauseAtWaypoint;
-                lookDirection = 1f;
-            }
-
             PickNextWaypoint();
-        }
     }
 
     void PickNextWaypoint()

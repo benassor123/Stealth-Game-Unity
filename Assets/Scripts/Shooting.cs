@@ -15,7 +15,7 @@ public class Shooting : MonoBehaviour
 
     void TryShoot()
     {
-        // check gun is drawn
+
         PlayerMov player = GetComponent<PlayerMov>();
         if (player == null || !player.gunDrawn)
         {
@@ -23,7 +23,7 @@ public class Shooting : MonoBehaviour
             return;
         }
 
-        // check ammo
+
         HUD hud = FindFirstObjectByType<HUD>();
         if (hud != null && hud.GetAmmo() <= 0)
         {
@@ -34,7 +34,7 @@ public class Shooting : MonoBehaviour
         if (hud != null)
             hud.UseAmmo();
 
-        // spawn bullet in front of the player
+
         Vector2 dir = transform.right;
         Vector3 spawnPos = transform.position + (Vector3)(dir * fireOffset);
 

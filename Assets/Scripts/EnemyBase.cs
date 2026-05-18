@@ -306,6 +306,15 @@ public class EnemyBase : MonoBehaviour
         }
     }
 
+    public virtual void OnTakedown()
+    {
+        EnemyHealth health = GetComponent<EnemyHealth>();
+
+        if (health != null)
+            health.Die();
+        else
+            Destroy(gameObject);
+    }
 
     protected void RecomputePath(Vector2 targetPos)
     {
@@ -562,14 +571,5 @@ public class EnemyBase : MonoBehaviour
         transform.rotation = Quaternion.Euler(0, 0, angle);
     }
 
-    public virtual void OnTakedown()
-    {
-        EnemyHealth health = GetComponent<EnemyHealth>();
-
-        if (health != null)
-            health.Die();
-        else
-            Destroy(gameObject);
-    }
 }
 
