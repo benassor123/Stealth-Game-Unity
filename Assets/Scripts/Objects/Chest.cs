@@ -15,8 +15,8 @@ public class Chest : MonoBehaviour
     public int maxAmmo = 3;
     public int minSmoke = 0;
     public int maxSmoke = 2;
-    public int minHealth = 0;
-    public int maxHealth = 30;
+    public int minCanisters = 0;
+    public int maxCanisters = 1;
 
     SpriteRenderer sr;
     bool isOpen = false;
@@ -34,7 +34,6 @@ public class Chest : MonoBehaviour
         if (isOpen) return;
         if (!playerInRange) return;
         if (!Keyboard.current.eKey.wasPressedThisFrame) return;
-
         TryOpen();
     }
 
@@ -42,10 +41,8 @@ public class Chest : MonoBehaviour
     {
         if (requiresKeycard && Keycard.keycardCount <= 0) return;
         if (requiresKeycard) Keycard.keycardCount--;
-
         isOpen = true;
         if (openSprite != null) sr.sprite = openSprite;
-
         GiveLoot();
     }
 
@@ -55,16 +52,16 @@ public class Chest : MonoBehaviour
         if (hud == null) return;
 
         int ammo = Random.Range(minAmmo, maxAmmo + 1);
-
         int smoke = Random.Range(minSmoke, maxSmoke + 1);
-        int health = Random.Range(minHealth, maxHealth + 1);
+        int canisters = Random.Range(minCanisters, maxCanisters + 1);
 
         hud.AddAmmo(ammo);
         hud.AddSmokeBomb(smoke);
-        hud.Heal(health);
+        hud.AddCanister(canisters);
 
-        Debug.Log("The Chest gave: " + ammo + " ammo, " + smoke + " smoke, " + health + " hp");
+        Debug.Log("The Chest gave: " + ammo + " ammo, " + smoke + " smoke, " + canisters + " canisters");
     }
+
     void OnTriggerEnter2D(Collider2D other)
     {
         if (!other.CompareTag("Player")) return;

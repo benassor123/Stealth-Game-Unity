@@ -6,7 +6,7 @@ public class EnemyHealth : MonoBehaviour
     public GameObject healthBarPrefab;
     public float barHeight = 0.7f;
 
-    float currentHealth;
+    public float currentHealth;
     GameObject healthBarObj;
     Transform fillBar;
     float originalFillScaleX;
