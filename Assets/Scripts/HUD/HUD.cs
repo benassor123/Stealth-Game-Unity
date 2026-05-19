@@ -68,12 +68,13 @@ public class HUD : MonoBehaviour
             int secs = (int)(timer % 60f);
             string minsStr = mins.ToString();
             string secsStr = secs.ToString();
-
-            if (mins < 10)
-                minsStr = "0" + mins;
-            if (secs < 10)
-                secsStr = "0" + secs;
+            if (mins < 10) minsStr = "0" + mins;
+            if (secs < 10) secsStr = "0" + secs;
             timerText.text = minsStr + ":" + secsStr;
+
+            if (timer <= 10f) timerText.color = Color.red;
+
+            else timerText.color = Color.white;
         }
 
         if (floorText != null) floorText.text = "Floor " + currentFloor;
